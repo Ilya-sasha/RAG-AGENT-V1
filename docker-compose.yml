@@ -1,0 +1,28 @@
+services:
+  agent-runtime:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agent-runtime:v1
+    init: true
+    restart: unless-stopped
+    ports:
+      - "${HOST_PUBLISHED_PORT:-8000}:${CONTAINER_AGENT_RUNTIME_PORT:-8000}"
+    environment:
+      AGENT_RUNTIME_HOST: ${CONTAINER_AGENT_RUNTIME_HOST:-0.0.0.0}
+      AGENT_RUNTIME_PORT: ${CONTAINER_AGENT_RUNTIME_PORT:-8000}
+      AGENT_RUNTIME_DB_URL: ${CONTAINER_AGENT_RUNTIME_DB_URL:-sqlite+aiosqlite:////data/runtime.db}
+      AGENT_RUNTIME_EMBEDDING_MODEL_ROOT: ${CONTAINER_AGENT_RUNTIME_EMBEDDING_MODEL_ROOT:-/models/embedding_models}
+    volumes:
+      - type: bind
+        source: ./.docker-data
+        target: /data
+      - type: bind
+        source: ${HOST_EMBEDDING_MODEL_ROOT:-C:/models/embedding_models}
+        target: /models/embedding_models
+        read_only: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os, urllib.request; urllib.request.urlopen(f\"http://127.0.0.1:{os.environ.get('AGENT_RUNTIME_PORT', '8000')}/health\").read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

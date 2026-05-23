@@ -1,0 +1,48 @@
+{
+  "baseline_name": "core_api",
+  "generated_at": "2026-05-17T15:54:32.934538+00:00",
+  "python_version": "3.11.15",
+  "scenario_count": 4,
+  "scenarios": [
+    {
+      "scenario": "run_create_complete",
+      "iterations": 10,
+      "warmup_iterations": 2,
+      "latency_ms_p50": 149.49219999834895,
+      "latency_ms_p95": 192.68332500068936,
+      "latency_ms_max": 202.35540001885965,
+      "throughput_ops_per_sec": 2.323604818198973,
+      "degradation_tolerance_ratio": 0.5
+    },
+    {
+      "scenario": "run_create_wait_for_approval",
+      "iterations": 10,
+      "warmup_iterations": 2,
+      "latency_ms_p50": 181.3247000100091,
+      "latency_ms_p95": 203.106505019241,
+      "latency_ms_max": 207.0796000189148,
+      "throughput_ops_per_sec": 2.0513877976899533,
+      "degradation_tolerance_ratio": 0.5
+    },
+    {
+      "scenario": "approval_approve_resume_complete",
+      "iterations": 10,
+      "warmup_iterations": 2,
+      "latency_ms_p50": 172.67844997695647,
+      "latency_ms_p95": 245.99829998915084,
+      "latency_ms_max": 295.85109994513914,
+      "throughput_ops_per_sec": 1.421738310535436,
+      "degradation_tolerance_ratio": 0.5
+    },
+    {
+      "scenario": "metrics_scrape",
+      "iterations": 10,
+      "warmup_iterations": 2,
+      "latency_ms_p50": 1.1820000363513827,
+      "latency_ms_p95": 2.028334984788671,
+      "latency_ms_max": 2.1379999816417694,
+      "throughput_ops_per_sec": 3.6710499860143586,
+      "degradation_tolerance_ratio": 0.5
+    }
+  ]
+}

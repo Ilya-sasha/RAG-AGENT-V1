@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>智能助手工作台</title>
+  <link rel="stylesheet" href="/assistant/assets/assistant.css">
+</head>
+<body>
+  <div class="workspace-shell">
+    <header class="workspace-header">
+      <div>
+        <p class="workspace-kicker">Agent Runtime</p>
+        <h1>智能助手工作台</h1>
+        <p class="workspace-copy">在同一个工作台中管理会话、继续对话、发起任务运行，并处理审批。</p>
+      </div>
+      <div class="workspace-controls">
+        <label class="field compact">
+          <span>租户</span>
+          <input id="tenant-id" type="text" value="tenant-a" placeholder="tenant-a">
+        </label>
+        <button id="refresh-sessions" class="button button-primary" type="button">刷新</button>
+        <a class="button button-ghost" href="/docs" target="_blank" rel="noreferrer">API 文档</a>
+      </div>
+    </header>
+
+    <main class="workspace-grid">
+      <aside class="panel session-rail">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-label">会话</p>
+            <h2>会话列表</h2>
+          </div>
+          <span id="session-count" class="pill">0 个</span>
+        </div>
+
+        <form id="session-form" class="stack-form">
+          <label class="field">
+            <span>标题</span>
+            <input id="session-title" type="text" placeholder="运维助手">
+          </label>
+          <label class="field">
+            <span>模式</span>
+            <select id="session-mode">
+              <option value="chat">聊天</option>
+              <option value="task">任务</option>
+            </select>
+          </label>
+          <button class="button button-primary" type="submit">创建会话</button>
+        </form>
+
+        <div id="session-list" class="session-list empty-state">当前还没有加载任何会话。</div>
+      </aside>
+
+      <section class="panel interaction-pane">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-label">对话</p>
+            <h2>交互区</h2>
+          </div>
+          <span id="active-session-badge" class="pill muted">未选择会话</span>
+        </div>
+
+        <section class="knowledge-base-picker">
+          <div class="panel-heading compact">
+            <div>
+              <p class="panel-label">知识库</p>
+              <h3>检索范围</h3>
+            </div>
+            <div class="workspace-controls compact">
+              <span id="knowledge-base-count" class="pill muted">0 个</span>
+              <button id="refresh-knowledge-bases" class="button button-ghost" type="button">刷新知识库</button>
+            </div>
+          </div>
+          <div class="knowledge-base-help">选择后会传给 `rag_search` 的 `kb_ids`。</div>
+          <div id="knowledge-base-list" class="knowledge-base-list empty-state">正在加载知识库…</div>
+        </section>
+
+        <div id="message-feed" class="message-feed empty-state">请选择一个会话查看消息。</div>
+
+        <div class="composer-grid">
+          <form id="chat-form" class="stack-form">
+            <h3>发送消息</h3>
+            <label class="field">
+              <span>消息内容</span>
+              <textarea id="chat-input" rows="5" placeholder="向助手提问，或让它给出下一步建议。"></textarea>
+            </label>
+            <button class="button" type="submit">发送</button>
+          </form>
+
+          <form id="task-form" class="stack-form">
+            <h3>创建任务</h3>
+            <label class="field">
+              <span>任务目标</span>
+              <textarea id="task-objective" rows="5" placeholder="例如：排查 incident INC-42"></textarea>
+            </label>
+            <label class="field">
+              <span>工作流 ID（可选）</span>
+              <input id="task-workflow-id" type="text" placeholder="wf-triage">
+            </label>
+            <label class="field">
+              <span>版本号（可选）</span>
+              <input id="task-version" type="number" min="1" placeholder="默认最新版本">
+            </label>
+            <label class="field">
+              <span>启动输入 JSON</span>
+              <textarea id="task-launch-input" rows="4" placeholder='{"ticket_id":"INC-42"}'></textarea>
+            </label>
+            <button class="button" type="submit">创建任务</button>
+          </form>
+        </div>
+      </section>
+
+      <aside class="panel context-pane">
+        <div class="panel-heading">
+          <div>
+            <p class="panel-label">上下文</p>
+            <h2>上下文区</h2>
+          </div>
+          <span id="activity-status" class="pill muted">空闲</span>
+        </div>
+
+        <div class="stack-form approval-box">
+          <h3>审批操作</h3>
+          <label class="field">
+            <span>审批 ID</span>
+            <input id="approval-id" type="text" placeholder="approval-...">
+          </label>
+          <label class="field">
+            <span>处理备注</span>
+            <textarea id="approval-note" rows="3" placeholder="可选"></textarea>
+          </label>
+          <div class="action-row">
+            <button id="load-approval" class="button button-ghost" type="button">加载</button>
+            <button id="approve-approval" class="button button-primary" type="button">批准</button>
+            <button id="reject-approval" class="button button-danger" type="button">拒绝</button>
+          </div>
+          <pre id="approval-result" class="data-block">审批详情会显示在这里。</pre>
+        </div>
+
+        <section>
+          <h3>活动记录</h3>
+          <div id="activity-list" class="activity-list empty-state">会话活动会显示在这里。</div>
+        </section>
+
+        <section>
+          <h3>运行快照</h3>
+          <pre id="run-detail" class="data-block">选择一个关联运行后可查看状态。</pre>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="workspace-footer">
+      <div id="global-status">工作台已就绪。</div>
+    </footer>
+  </div>
+
+  <script src="/assistant/assets/assistant.js" defer></script>
+</body>
+</html>
